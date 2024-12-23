@@ -12,19 +12,23 @@ const TranslateForm: React.FC = () => {
   const [targetLang, setTargetLang] = useState('fr');
   const [loading, setLoading] = useState(false);
   const [translation, setTranslation] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleTranslate = async () => {
     setLoading(true);
     setTranslation(null);
+    setError(null);
+    
     try {
       const response = await axios.post<TranslationResponse>(
         'https://nameless.aicodegen.workers.dev',
-        { text, source_lang: sourceLang, target_lang: targetLang }
+        { text, source_lang: sourceLang, target_lang: targetLang },
+        { timeout: 15000 }  // 15 seconds timeout
       );
       setTranslation(response.data.response.translation_text);
-    } catch (error) {
-      console.error('Translation error:', error);
-      setTranslation('Error while translating. Please try again.');
+    } catch (error: any) {
+      console.error('API Error:', error);
+      setError('Error while translating. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -65,11 +69,19 @@ const TranslateForm: React.FC = () => {
         fullWidth
         onClick={handleTranslate}
         startIcon={<AiOutlineArrowRight />}
-        disabled={loading}
+        disabled={loading || !text}
       >
         Translate
       </Button>
+      
       {loading && <Loader />}
+      
+      {error && (
+        <Box mt={3} p={2} bgcolor="error.main" color="white" borderRadius={2}>
+          <Typography variant="body1">{error}</Typography>
+        </Box>
+      )}
+      
       {translation && (
         <Box mt={3} p={2} border={1} borderRadius={2} borderColor="grey.300">
           <Typography variant="subtitle1" gutterBottom>
