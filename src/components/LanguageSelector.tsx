@@ -1,30 +1,30 @@
 import React from 'react';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 interface LanguageSelectorProps {
   value: string;
   onChange: (value: string) => void;
+  label: string;
 }
 
-const LanguageSelector: React.FC<LanguageSelectorProps> = ({ value, onChange }) => {
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({ value, onChange, label }) => {
   const languages = [
     { code: 'en', label: 'English' },
     { code: 'fr', label: 'French' },
     { code: 'es', label: 'Spanish' },
-    // Add more languages as needed
   ];
 
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full p-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-    >
-      {languages.map((lang) => (
-        <option key={lang.code} value={lang.code}>
-          {lang.label}
-        </option>
-      ))}
-    </select>
+    <FormControl fullWidth>
+      <InputLabel>{label}</InputLabel>
+      <Select value={value} onChange={(e) => onChange(e.target.value)}>
+        {languages.map((lang) => (
+          <MenuItem key={lang.code} value={lang.code}>
+            {lang.label}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 };
 
