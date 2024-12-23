@@ -1,11 +1,15 @@
 import React from 'react';
 import TranslateForm from './components/TranslateForm';
+import { CssBaseline } from '@mui/material';
 
 const App: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-300">
-      <TranslateForm />
-    </div>
+    <>
+      <CssBaseline />
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <TranslateForm />
+      </div>
+    </>
   );
 };
 
