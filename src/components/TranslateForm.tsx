@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { TextField, Button, Box, Typography } from '@mui/material';
 import LanguageSelector from './LanguageSelector';
 import Loader from './Loader';
-import { AiOutlineArrowRight } from 'react-icons/ai';
 import axios from 'axios';
+import { TranslationResponse } from '../types/translation';
+import { AiOutlineArrowRight } from 'react-icons/ai';
 
 const TranslateForm: React.FC = () => {
   const [text, setText] = useState('');
@@ -15,13 +17,13 @@ const TranslateForm: React.FC = () => {
     setLoading(true);
     setTranslation(null);
     try {
-      const response = await axios.post(
+      const response = await axios.post<TranslationResponse>(
         'https://nameless.aicodegen.workers.dev',
         { text, source_lang: sourceLang, target_lang: targetLang }
       );
       setTranslation(response.data.response.translation_text);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Translation error:', error);
       setTranslation('Error while translating. Please try again.');
     } finally {
       setLoading(false);
@@ -29,35 +31,54 @@ const TranslateForm: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-md rounded-lg w-full max-w-md mx-auto">
-      <h1 className="text-xl font-semibold text-center mb-4 text-gray-700">
+    <Box
+      sx={{
+        p: 3,
+        borderRadius: 2,
+        boxShadow: 3,
+        bgcolor: 'background.paper',
+        maxWidth: 500,
+        mx: 'auto',
+        mt: 5,
+        textAlign: 'center',
+      }}
+    >
+      <Typography variant="h5" gutterBottom>
         AI Translator
-      </h1>
-      <textarea
-        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4"
+      </Typography>
+      <TextField
+        label="Text to Translate"
+        multiline
         rows={4}
-        placeholder="Enter text to translate..."
         value={text}
         onChange={(e) => setText(e.target.value)}
-      ></textarea>
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <LanguageSelector value={sourceLang} onChange={setSourceLang} />
-        <LanguageSelector value={targetLang} onChange={setTargetLang} />
-      </div>
-      <button
-        className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-blue-600 transition-all"
+        fullWidth
+        margin="normal"
+      />
+      <Box display="flex" gap={2} mb={2}>
+        <LanguageSelector value={sourceLang} onChange={setSourceLang} label="Source Language" />
+        <LanguageSelector value={targetLang} onChange={setTargetLang} label="Target Language" />
+      </Box>
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
         onClick={handleTranslate}
+        startIcon={<AiOutlineArrowRight />}
         disabled={loading}
       >
-        {loading ? <Loader /> : <>Translate <AiOutlineArrowRight /></>}
-      </button>
+        Translate
+      </Button>
+      {loading && <Loader />}
       {translation && (
-        <div className="mt-4 p-4 bg-gray-100 border border-gray-300 rounded-lg text-gray-700">
-          <h2 className="font-semibold mb-2">Translation:</h2>
-          <p>{translation}</p>
-        </div>
+        <Box mt={3} p={2} border={1} borderRadius={2} borderColor="grey.300">
+          <Typography variant="subtitle1" gutterBottom>
+            Translation:
+          </Typography>
+          <Typography>{translation}</Typography>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 
